@@ -19,3 +19,72 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Bouncing GIF container */
+.bounce-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.bounce {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  animation: bounce 10s linear infinite;
+}
+
+@keyframes bounce {
+  0% {
+    top: 0;
+    left: 0;
+    transform: translate(1, 1);
+  }
+  25% {
+    top: 0;
+    left: calc(100vw - 500px);
+    transform: translate(-1, 1);
+  }
+  50% {
+    top: calc(100vh - 500px);
+    left: calc(100vw - 500px);
+    transform: translate(-1, -1);
+  }
+  75% {
+    top: calc(100vh - 500px);
+    left: 0;
+    transform: translate(1, -1);
+  }
+  100% {
+    top: 0;
+    left: 0;
+    transform: translate(1, 1);
+  }
+}
+
+/* Floating Icon Container */
+.absolute {
+  position: absolute;
+}
+
+.top-4 {
+  top: 1rem; /* Adjust spacing if needed */
+}
+
+.right-4 {
+  right: 1rem; /* Adjust spacing if needed */
+}
+
+.flex {
+  display: flex;
+}
+
+.space-x-4 > * + * {
+  margin-left: 1rem;
+}
+
+/* Icon Hover Effect */
+.icon-hover:hover {
+  opacity: 0.8;
+}
