@@ -55,15 +55,17 @@ const KirbyPage = () => {
 
     // Apply gravity effect with requestAnimationFrame for smoother animation
     useEffect(() => {
+        let animationFrameId: number;
+
         const animationFrame = () => {
             if (isJumping || velocityY !== 0) {
                 applyGravity();
             }
-            requestAnimationFrame(animationFrame);
+            animationFrameId = requestAnimationFrame(animationFrame);
         };
-        requestAnimationFrame(animationFrame);
+        animationFrameId = requestAnimationFrame(animationFrame);
 
-        return () => cancelAnimationFrame(animationFrame);
+        return () => cancelAnimationFrame(animationFrameId);
     }, [isJumping, velocityY, kirbyPosY]);
 
     return (
