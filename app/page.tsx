@@ -4,29 +4,65 @@ import { useState, useEffect } from 'react';
 
 const KirbyPage = () => {
     const [kirbyPosX, setKirbyPosX] = useState(50); // Kirby's horizontal position
+    const [kirbyPosY, setKirbyPosY] = useState(0); // Kirby's vertical position for jumping
+    const [isJumping, setIsJumping] = useState(false);
     const [facingRight, setFacingRight] = useState(true);
     const [isMuted, setIsMuted] = useState(true); // Control mute/unmute for YouTube video
+    const [velocityY, setVelocityY] = useState(0); // Vertical velocity for gravity effect
 
     const MOVE_STEP = 10;
+    const JUMP_HEIGHT = 20;
+    const GRAVITY = 1;
 
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
-            setKirbyPosX((prevPosX) => Math.min(prevPosX + MOVE_STEP, window.innerWidth - 50));
+            setKirbyPosX((prevPosX) => Math.min(prevPosX + MOVE_STEP, window.innerWidth - 75)); // Adjust for new Kirby size
             setFacingRight(true);
         }
         if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'q') {
             setKirbyPosX((prevPosX) => Math.max(prevPosX - MOVE_STEP, 0));
             setFacingRight(false);
         }
+        if ((e.key === ' ' || e.key.toLowerCase() === 'z') && !isJumping) {
+            startJump();
+        }
     };
 
-    // Add event listener for keyboard when component mounts
+    const startJump = () => {
+        if (!isJumping) {
+            setIsJumping(true);
+            setVelocityY(-JUMP_HEIGHT); // Initial upward velocity for jump
+        }
+    };
+
+    const applyGravity = () => {
+        setKirbyPosY((prevPosY) => Math.max(prevPosY + velocityY, 0)); // Ensure Kirby doesn’t fall below ground level
+        setVelocityY((prevVelocity) => prevVelocity + GRAVITY); // Gravity effect
+
+        // Stop falling if Kirby reaches the ground level
+        if (kirbyPosY <= 0) {
+            setIsJumping(false);
+        }
+    };
+
+    // Add event listeners for keyboard when component mounts
     useEffect(() => {
         window.addEventListener('keydown', handleKeyDown);
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, []);
+
+    // Apply gravity effect on every frame
+    useEffect(() => {
+        const gravityInterval = setInterval(() => {
+            if (isJumping || velocityY > 0) {
+                applyGravity();
+            }
+        }, 30);
+
+        return () => clearInterval(gravityInterval);
+    }, [isJumping, velocityY, kirbyPosY]);
 
     return (
         <div style={styles.container}>
@@ -49,7 +85,7 @@ const KirbyPage = () => {
             {/* YouTube Embed */}
             <div style={styles.youtubeContainer}>
                 <iframe
-                    src={`https://www.youtube.com/embed/lh0rbqDJ6pQ?autoplay=1&loop=1&mute=${isMuted ? 1 : 0}`}
+                    src={`https://www.youtube.com/embed/YOUR_VIDEO_ID?autoplay=1&loop=1&mute=${isMuted ? 1 : 0}`}
                     title="Background Music"
                     width="0"
                     height="0"
@@ -67,6 +103,7 @@ const KirbyPage = () => {
                 style={{
                     ...styles.kirby,
                     left: kirbyPosX,
+                    bottom: kirbyPosY + 35,
                     transform: `scaleX(${facingRight ? 1 : -1})`,
                 }}
             ></div>
@@ -92,18 +129,18 @@ const styles = {
         position: 'absolute',
         top: '10px',
         left: '10px',
-        width: '100px', // Adjust size as needed
+        width: '150px', // Increased size for the logo
     } as React.CSSProperties,
     socialIcons: {
         position: 'absolute',
         top: '10px',
         right: '10px',
         display: 'flex',
-        gap: '10px', // Space between icons
+        gap: '15px', // Increased spacing between icons
     } as React.CSSProperties,
     icon: {
-        width: '30px', // Adjust size as needed
-        height: '30px',
+        width: '40px', // Increased size for social icons
+        height: '40px',
         cursor: 'pointer',
     } as React.CSSProperties,
     youtubeContainer: {
@@ -117,13 +154,13 @@ const styles = {
     } as React.CSSProperties,
     unmuteButton: {
         padding: '8px 12px',
-        fontSize: '12px',
+        fontSize: '14px', // Slightly larger font for button
         cursor: 'pointer',
     } as React.CSSProperties,
     kirby: {
         position: 'absolute',
-        width: '50px',
-        height: '50px',
+        width: '75px', // Increased size for Kirby
+        height: '75px',
         backgroundImage: "url('/kirby.gif')",
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'contain',
