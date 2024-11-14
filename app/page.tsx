@@ -11,7 +11,7 @@ const KirbyPage = () => {
     const [velocityY, setVelocityY] = useState(0); // Vertical velocity for gravity effect
 
     const MOVE_STEP = 10;
-    const JUMP_HEIGHT = 20;
+    const JUMP_STRENGTH = 20;
     const GRAVITY = 1;
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -31,7 +31,7 @@ const KirbyPage = () => {
     const startJump = () => {
         if (!isJumping) {
             setIsJumping(true);
-            setVelocityY(-JUMP_HEIGHT); // Initial upward velocity for jump
+            setVelocityY(-JUMP_STRENGTH); // Initial upward velocity for jump
         }
     };
 
@@ -40,8 +40,9 @@ const KirbyPage = () => {
         setVelocityY((prevVelocity) => prevVelocity + GRAVITY); // Gravity effect
 
         // Stop falling if Kirby reaches the ground level
-        if (kirbyPosY <= 0) {
+        if (kirbyPosY <= 0 && velocityY >= 0) {
             setIsJumping(false);
+            setVelocityY(0); // Reset velocity when hitting the ground
         }
     };
 
@@ -56,7 +57,7 @@ const KirbyPage = () => {
     // Apply gravity effect on every frame
     useEffect(() => {
         const gravityInterval = setInterval(() => {
-            if (isJumping || velocityY > 0) {
+            if (isJumping || velocityY !== 0) {
                 applyGravity();
             }
         }, 30);
@@ -78,7 +79,7 @@ const KirbyPage = () => {
                     <img src="/dex-logo.png" alt="DEXScreener" style={styles.icon} />
                 </a>
                 <a href="https://t.me/+1HkDem0pFos4YjU0" target="_blank" rel="noopener noreferrer">
-                    <img src="/telegram_logo.png" alt="Telegram" style={styles.icon} />
+                    <img src="/telegram-logo.png" alt="Telegram" style={styles.icon} />
                 </a>
             </div>
 
