@@ -8,47 +8,51 @@ const KirbyPage = () => {
     const [isJumping, setIsJumping] = useState(false);
     const [velocityY, setVelocityY] = useState(0); // Vertical velocity for jump and gravity effect
 
-    // Default facing direction is set to left
+    // Default direction is left (no transformation)
     const [facingRight, setFacingRight] = useState(false);
 
     const MOVE_STEP = 10;
-    const JUMP_STRENGTH = 20; // Jump strength
-    const GRAVITY = 1; // Gravity effect
+    const JUMP_STRENGTH = -30; // Jump strength
+    const GRAVITY = 1; // Gravity strength
+    const JUMP_HEIGHT = 700; // Maximum jump height
 
     // Handle keyboard controls for left, right, and jump
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
             setKirbyPosX((prevPosX) => Math.min(prevPosX + MOVE_STEP, window.innerWidth - 50));
-            if (!facingRight) setFacingRight(true); // Face right if moving right
+            setFacingRight(true); // Face right when moving right
         }
         if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'q') {
             setKirbyPosX((prevPosX) => Math.max(prevPosX - MOVE_STEP, 0));
-            if (facingRight) setFacingRight(false); // Face left if moving left
+            setFacingRight(false); // Face left when moving left
         }
         if (e.key === ' ' && !isJumping) { // Spacebar for jump
             startJump();
         }
     };
 
-    // Start the jump by setting upward velocity
+    // Start the jump by setting an initial upward velocity
     const startJump = () => {
         setIsJumping(true);
-        setVelocityY(-JUMP_STRENGTH); // Upward velocity for the jump
+        setVelocityY(JUMP_STRENGTH); // Initial upward velocity for jump
     };
 
-    // Apply gravity and update position
+    // Apply gravity and update position for jumping and falling
     const applyGravity = () => {
-        setKirbyPosY((prevPosY) => Math.max(prevPosY + velocityY, 0)); // Update position
-        setVelocityY((prevVelocity) => prevVelocity + GRAVITY); // Apply gravity to velocity
+        setKirbyPosY((prevPosY) => {
+            const newPosY = prevPosY + velocityY;
 
-        // If Kirby reaches the ground, stop the jump
-        if (kirbyPosY === 0 && velocityY >= 0) {
-            setIsJumping(false);
-            setVelocityY(0); // Reset velocity when on the ground
-        }
+            // If Kirby reaches the peak jump height or the ground, stop jumping
+            if (newPosY >= JUMP_HEIGHT || newPosY <= 0) {
+                setIsJumping(newPosY > 0); // Allows Kirby to fall back down if above ground
+                return Math.max(newPosY, 0); // Ensure Kirby doesn't fall below ground level
+            }
+            return newPosY;
+        });
+        setVelocityY((prevVelocity) => (isJumping ? prevVelocity + GRAVITY : 0)); // Apply gravity to velocity
     };
 
-    // Add event listeners for keyboard when component mounts
+    // Event listeners for keyboard
     useEffect(() => {
         window.addEventListener('keydown', handleKeyDown);
         return () => {
@@ -56,7 +60,7 @@ const KirbyPage = () => {
         };
     }, []);
 
-    // Apply gravity effect on every frame using requestAnimationFrame for smooth animation
+    // Animation frame for smooth gravity and movement
     useEffect(() => {
         const animate = () => {
             if (isJumping || velocityY !== 0) {
@@ -76,7 +80,7 @@ const KirbyPage = () => {
             <div style={styles.socialIcons}>
                 <img src="/twitter-logo.png" alt="Twitter" style={styles.icon} />
                 <img src="/dex-logo.png" alt="DEXScreener" style={styles.icon} />
-                <img src="/telegram-logo.png" alt="Telegram" style={styles.icon} /> {/* Updated filename */}
+                <img src="/telegram-logo.png" alt="Telegram" style={styles.icon} />
             </div>
 
             {/* Kirby character */}
