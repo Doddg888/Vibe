@@ -67,9 +67,6 @@ const KirbyPage = () => {
 
     return (
         <div style={styles.container}>
-            {/* Retro-style welcome text */}
-            <div style={styles.welcomeText}>Welcome to $Vibe</div>
-
             {/* Logo at top-left */}
             <img src="/logo-vibe.png" alt="Vibe Logo" style={styles.logo} />
 
@@ -84,21 +81,6 @@ const KirbyPage = () => {
                 <a href="https://t.me/+1HkDem0pFos4YjU0" target="_blank" rel="noopener noreferrer">
                     <img src="/telegram-logo.png" alt="Telegram" style={styles.icon} />
                 </a>
-            </div>
-
-            {/* YouTube Embed */}
-            <div style={styles.youtubeContainer}>
-                <iframe
-                    src={`https://www.youtube.com/embed/YOUR_VIDEO_ID?autoplay=1&loop=1&mute=${isMuted ? 1 : 0}`}
-                    title="Background Music"
-                    width="0"
-                    height="0"
-                    allow="autoplay"
-                    style={{ border: 'none' }}
-                ></iframe>
-                <button onClick={() => setIsMuted(!isMuted)} style={styles.unmuteButton}>
-                    {isMuted ? "Unmute Sound" : "Mute Sound"}
-                </button>
             </div>
 
             {/* Kirby character */}
@@ -129,17 +111,6 @@ const styles = {
         alignItems: 'flex-end',
         position: 'relative',
     } as React.CSSProperties,
-    welcomeText: {
-        position: 'absolute',
-        top: '50px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        fontSize: '48px',
-        fontFamily: '"Press Start 2P", cursive', // Retro game font (load Google Font if needed)
-        color: 'rgba(255, 255, 255, 0.7)', // White with 70% opacity
-        textShadow: '2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000', // Retro shadow effect
-        pointerEvents: 'none',
-    } as React.CSSProperties,
     logo: {
         position: 'absolute',
         top: '10px',
@@ -156,20 +127,6 @@ const styles = {
     icon: {
         width: '40px', // Increased size for social icons
         height: '40px',
-        cursor: 'pointer',
-    } as React.CSSProperties,
-    youtubeContainer: {
-        position: 'absolute',
-        bottom: '10px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-    } as React.CSSProperties,
-    unmuteButton: {
-        padding: '8px 12px',
-        fontSize: '14px', // Slightly larger font for button
         cursor: 'pointer',
     } as React.CSSProperties,
     kirby: {
