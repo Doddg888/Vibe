@@ -10,8 +10,8 @@ const KirbyPage = () => {
     const [velocityY, setVelocityY] = useState(0); // Vertical velocity for gravity effect
 
     const MOVE_STEP = 10;
-    const JUMP_STRENGTH = 15; // Initial jump velocity
-    const GRAVITY = 0.6; // Gravity effect for a smoother jump arc
+    const JUMP_STRENGTH = 20; // Jump strength
+    const GRAVITY = 1; // Gravity strength
 
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
@@ -22,7 +22,7 @@ const KirbyPage = () => {
             setKirbyPosX((prevPosX) => Math.max(prevPosX - MOVE_STEP, 0));
             setFacingRight(false); // Set to face left
         }
-        if ((e.key === ' ' || e.key.toLowerCase() === 'z' || e.key === 'ArrowUp') && !isJumping) { // Space, Z, or Up Arrow for jump
+        if (e.key === ' ' && !isJumping) { // Space for jump
             startJump();
         }
     };
@@ -36,7 +36,7 @@ const KirbyPage = () => {
 
     const applyGravity = () => {
         setKirbyPosY((prevPosY) => Math.max(prevPosY + velocityY, 0)); // Ensure Kirby doesn't fall below ground level
-        setVelocityY((prevVelocity) => prevVelocity + GRAVITY); // Gravity effect for downward motion
+        setVelocityY((prevVelocity) => prevVelocity + GRAVITY); // Apply gravity
 
         // Stop falling if Kirby reaches the ground level
         if (kirbyPosY === 0 && velocityY >= 0) {
@@ -53,7 +53,7 @@ const KirbyPage = () => {
         };
     }, []);
 
-    // Use requestAnimationFrame for smoother animation
+    // Apply gravity effect on every frame for smooth animation
     useEffect(() => {
         const animate = () => {
             if (isJumping || velocityY !== 0) {
@@ -73,7 +73,7 @@ const KirbyPage = () => {
             <div style={styles.socialIcons}>
                 <img src="/twitter-logo.png" alt="Twitter" style={styles.icon} />
                 <img src="/dex-logo.png" alt="DEXScreener" style={styles.icon} />
-                <img src="/telegram_logo.png" alt="Telegram" style={styles.icon} />
+                <img src="/telegram-logo.png" alt="Telegram" style={styles.icon} /> {/* Updated filename */}
             </div>
 
             {/* Kirby character */}
@@ -106,25 +106,25 @@ const styles = {
     } as React.CSSProperties,
     logo: {
         position: 'absolute',
-        top: '20px', // Increased spacing
+        top: '20px',
         left: '20px',
-        width: '200px', // Increased size for better visibility
+        width: '200px',
     } as React.CSSProperties,
     socialIcons: {
         position: 'absolute',
-        top: '20px', // Increased spacing
+        top: '20px',
         right: '20px',
         display: 'flex',
-        gap: '20px', // Increased spacing between icons
+        gap: '20px',
     } as React.CSSProperties,
     icon: {
-        width: '50px', // Increased size for social icons
+        width: '50px',
         height: '50px',
         cursor: 'pointer',
     } as React.CSSProperties,
     kirby: {
         position: 'absolute',
-        width: '75px', // Increased size for Kirby
+        width: '75px',
         height: '75px',
         backgroundImage: "url('/kirby.gif')",
         backgroundRepeat: 'no-repeat',
