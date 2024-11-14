@@ -12,21 +12,20 @@ const KirbyPage = () => {
     const [facingRight, setFacingRight] = useState(false);
 
     const MOVE_STEP = 10;
-    const JUMP_STRENGTH = -30; // Jump strength
+    const JUMP_STRENGTH = -20; // Jump strength
     const GRAVITY = 1; // Gravity strength
-    const JUMP_HEIGHT = 700; // Maximum jump height
 
     // Handle keyboard controls for left, right, and jump
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
-            setKirbyPosX((prevPosX) => Math.min(prevPosX + MOVE_STEP, window.innerWidth - 50));
+            setKirbyPosX((prevPosX) => Math.min(prevPosX + MOVE_STEP, window.innerWidth - 75));
             setFacingRight(true); // Face right when moving right
         }
         if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'q') {
             setKirbyPosX((prevPosX) => Math.max(prevPosX - MOVE_STEP, 0));
             setFacingRight(false); // Face left when moving left
         }
-        if (e.key === ' ' && !isJumping) { // Spacebar for jump
+        if ((e.key === ' ' || e.key === 'ArrowUp') && !isJumping) { // Spacebar or ArrowUp for jump
             startJump();
         }
     };
@@ -41,15 +40,15 @@ const KirbyPage = () => {
     const applyGravity = () => {
         setKirbyPosY((prevPosY) => {
             const newPosY = prevPosY + velocityY;
-
-            // If Kirby reaches the peak jump height or the ground, stop jumping
-            if (newPosY >= JUMP_HEIGHT || newPosY <= 0) {
-                setIsJumping(newPosY > 0); // Allows Kirby to fall back down if above ground
-                return Math.max(newPosY, 0); // Ensure Kirby doesn't fall below ground level
+            if (newPosY <= 0) {
+                // Kirby is on the ground
+                setIsJumping(false);
+                setVelocityY(0);
+                return 0; // Keep Kirby on the ground level
             }
             return newPosY;
         });
-        setVelocityY((prevVelocity) => (isJumping ? prevVelocity + GRAVITY : 0)); // Apply gravity to velocity
+        setVelocityY((prevVelocity) => prevVelocity + GRAVITY); // Apply gravity to velocity
     };
 
     // Event listeners for keyboard
@@ -69,18 +68,24 @@ const KirbyPage = () => {
             requestAnimationFrame(animate);
         };
         requestAnimationFrame(animate);
-    }, [isJumping, velocityY, kirbyPosY]);
+    }, [isJumping, velocityY]);
 
     return (
         <div style={styles.container}>
             {/* Logo at top-left */}
             <img src="/logo-vibe.png" alt="Vibe Logo" style={styles.logo} />
 
-            {/* Social icons at top-right */}
+            {/* Social icons at top-right with clickable links */}
             <div style={styles.socialIcons}>
-                <img src="/twitter-logo.png" alt="Twitter" style={styles.icon} />
-                <img src="/dex-logo.png" alt="DEXScreener" style={styles.icon} />
-                <img src="/telegram-logo.png" alt="Telegram" style={styles.icon} />
+                <a href="https://x.com/Vibe_On_Solana" target="_blank" rel="noopener noreferrer">
+                    <img src="/twitter-logo.png" alt="Twitter" style={styles.icon} />
+                </a>
+                <a href="https://dexscreener.com/solana/4b6akdqcqpqaylbkmdex4k9nrszj86qdax8vapzp5ra6" target="_blank" rel="noopener noreferrer">
+                    <img src="/dex-logo.png" alt="DEXScreener" style={styles.icon} />
+                </a>
+                <a href="https://t.me/+1HkDem0pFos4YjU0" target="_blank" rel="noopener noreferrer">
+                    <img src="/telegram-logo.png" alt="Telegram" style={styles.icon} />
+                </a>
             </div>
 
             {/* Kirby character */}
