@@ -1,44 +1,69 @@
-// app/page.tsx
-import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
-export default function Home() {
-  return (
-    <div className="relative min-h-screen bg-gray-900 text-white overflow-hidden">
-      {/* Centered and Clickable Floating Icons */}
-      <div className="absolute top-4 right-4 flex space-x-4 items-center">
-        <a href="https://t.me/enterVibee" target="_blank" rel="noopener noreferrer">
-          <Image
-            src="/telegram-icon.png" // Make sure to add telegram-icon.png to the public folder
-            alt="Telegram"
-            width={40}
-            height={40}
-            className="hover:opacity-80"
-          />
-        </a>
-        <a href="https://dexscreener.com/solana/4b6akdqcqpqaylbkmdex4k9nrszj86qdax8vapzp5ra6" target="_blank" rel="noopener noreferrer">
-          <Image
-            src="/dexscreener-icon.png" // Make sure to add dexscreener-icon.png to the public folder
-            alt="Dexscreener"
-            width={40}
-            height={40}
-            className="hover:opacity-80"
-          />
-        </a>
-      </div>
+const KirbyPage = () => {
+    // State for Kirby's position and jumping state
+    const [posX, setPosX] = useState(0);
+    const [isJumping, setIsJumping] = useState(false);
 
-      {/* Main Content */}
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        {/* Moving GIF */}
-        <div className="bounce-container">
-          <Image
-            src="/vibe.gif" // Make sure to add vibe.gif to the public folder
-            alt="Vibe GIF"
-            width={500}
-            height={500}
-            className="bounce"
-          />
+    // Event handler for keyboard controls
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'ArrowRight') {
+            setPosX((prevX) => prevX + 10);
+        }
+        if (e.key === 'ArrowLeft') {
+            setPosX((prevX) => prevX - 10);
+        }
+        if (e.key === ' ' && !isJumping) { // Space bar for jump
+            setIsJumping(true);
+            setTimeout(() => {
+                setIsJumping(false);
+            }, 500); // 0.5 seconds for jump duration
+        }
+    };
+
+    // Add event listener for keydown when component mounts
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isJumping]);
+
+    return (
+        <div style={styles.container}>
+            <div
+                id="kirby"
+                style={{
+                    ...styles.kirby,
+                    transform: `translateX(${posX}px) translateY(${isJumping ? '-100px' : '0'})`,
+                }}
+            ></div>
         </div>
-      </div>
-    </div>
-  );
-}
+    );
+};
+
+// Inline styles for simplicity
+const styles = {
+    container: {
+        margin: 0,
+        overflow: 'hidden',
+        background: "url('/BG-VIBE.jpg') repeat",
+        backgroundSize: 'cover',
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'flex-end',
+    } as React.CSSProperties,
+    kirby: {
+        position: 'absolute',
+        bottom: '50px',
+        width: '50px',
+        height: '50px',
+        backgroundImage: "url('/kirby.gif')",
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'contain',
+        transition: 'transform 0.5s',
+    } as React.CSSProperties,
+};
+
+export default KirbyPage;
