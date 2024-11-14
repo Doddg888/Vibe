@@ -10,8 +10,8 @@ const KirbyPage = () => {
     const [velocityY, setVelocityY] = useState(0); // Vertical velocity for gravity effect
 
     const MOVE_STEP = 10;
-    const JUMP_STRENGTH = 15;
-    const GRAVITY = 0.5;
+    const JUMP_STRENGTH = 15; // Initial jump velocity
+    const GRAVITY = 0.6; // Gravity effect for a smoother jump arc
 
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
@@ -22,7 +22,7 @@ const KirbyPage = () => {
             setKirbyPosX((prevPosX) => Math.max(prevPosX - MOVE_STEP, 0));
             setFacingRight(false); // Set to face left
         }
-        if ((e.key === ' ' || e.key.toLowerCase() === 'z') && !isJumping) { // Space or Z for jump
+        if ((e.key === ' ' || e.key.toLowerCase() === 'z' || e.key === 'ArrowUp') && !isJumping) { // Space, Z, or Up Arrow for jump
             startJump();
         }
     };
@@ -36,7 +36,7 @@ const KirbyPage = () => {
 
     const applyGravity = () => {
         setKirbyPosY((prevPosY) => Math.max(prevPosY + velocityY, 0)); // Ensure Kirby doesn't fall below ground level
-        setVelocityY((prevVelocity) => prevVelocity + GRAVITY); // Gravity effect
+        setVelocityY((prevVelocity) => prevVelocity + GRAVITY); // Gravity effect for downward motion
 
         // Stop falling if Kirby reaches the ground level
         if (kirbyPosY === 0 && velocityY >= 0) {
@@ -53,15 +53,15 @@ const KirbyPage = () => {
         };
     }, []);
 
-    // Apply gravity effect with requestAnimationFrame for smoother animation
+    // Use requestAnimationFrame for smoother animation
     useEffect(() => {
-        const animationFrame = () => {
+        const animate = () => {
             if (isJumping || velocityY !== 0) {
                 applyGravity();
             }
-            requestAnimationFrame(animationFrame);
+            requestAnimationFrame(animate);
         };
-        requestAnimationFrame(animationFrame);
+        requestAnimationFrame(animate);
     }, [isJumping, velocityY, kirbyPosY]);
 
     return (
@@ -106,26 +106,26 @@ const styles = {
     } as React.CSSProperties,
     logo: {
         position: 'absolute',
-        top: '10px',
-        left: '10px',
-        width: '100px', // Adjust size as needed
+        top: '20px', // Increased spacing
+        left: '20px',
+        width: '200px', // Increased size for better visibility
     } as React.CSSProperties,
     socialIcons: {
         position: 'absolute',
-        top: '10px',
-        right: '10px',
+        top: '20px', // Increased spacing
+        right: '20px',
         display: 'flex',
-        gap: '10px', // Space between icons
+        gap: '20px', // Increased spacing between icons
     } as React.CSSProperties,
     icon: {
-        width: '30px', // Adjust size as needed
-        height: '30px',
+        width: '50px', // Increased size for social icons
+        height: '50px',
         cursor: 'pointer',
     } as React.CSSProperties,
     kirby: {
         position: 'absolute',
-        width: '50px',
-        height: '50px',
+        width: '75px', // Increased size for Kirby
+        height: '75px',
         backgroundImage: "url('/kirby.gif')",
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'contain',
