@@ -3,80 +3,74 @@
 import { useState, useEffect } from 'react';
 
 const KirbyPage = () => {
-    const [kirbyPosX, setKirbyPosX] = useState(50); // Kirby's position on the screen
-    const [backgroundPos, setBackgroundPos] = useState(0); // Background position for camera effect
+    const [kirbyPosX, setKirbyPosX] = useState(50); // Kirby's horizontal position on the screen
+    const [kirbyPosY, setKirbyPosY] = useState(0); // Kirby's vertical offset for jumping
     const [isJumping, setIsJumping] = useState(false);
     const [facingRight, setFacingRight] = useState(true); // Tracks Kirby's direction
 
-    const moveRight = () => {
-        if (kirbyPosX < window.innerWidth - 100) {
-            // Move Kirby within screen bounds
-            setKirbyPosX((prevPosX) => prevPosX + 10);
-        } else {
-            // Move background instead of Kirby when reaching the right edge
-            setBackgroundPos((prevPos) => prevPos - 10);
-        }
-        setFacingRight(true);
-    };
+    // Kirby movement speed and jump properties
+    const MOVE_STEP = 10;
+    const JUMP_HEIGHT = 100;
+    const JUMP_SPEED = 5;
 
-    const moveLeft = () => {
-        if (kirbyPosX > 50) {
-            // Move Kirby within screen bounds
-            setKirbyPosX((prevPosX) => prevPosX - 10);
-        } else {
-            // Move background instead of Kirby when reaching the left edge
-            setBackgroundPos((prevPos) => prevPos + 10);
-        }
-        setFacingRight(false);
-    };
-
-    // Event handler for keyboard and touch controls
     const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-            moveRight();
+        if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+            setKirbyPosX((prevPosX) => Math.min(prevPosX + MOVE_STEP, window.innerWidth - 50)); // Stay within screen bounds
+            setFacingRight(true);
         }
-        if (e.key === 'ArrowLeft' || e.key === 'q' || e.key === 'Q') {
-            moveLeft();
+        if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'q') {
+            setKirbyPosX((prevPosX) => Math.max(prevPosX - MOVE_STEP, 0)); // Stay within screen bounds
+            setFacingRight(false);
         }
-        if ((e.key === ' ' || e.key === 'z' || e.key === 'Z') && !isJumping) { // Space bar or Z for jump
-            setIsJumping(true);
-            setTimeout(() => {
+        if ((e.key === ' ' || e.key.toLowerCase() === 'z') && !isJumping) { // Space or Z for jump
+            startJump();
+        }
+    };
+
+    const startJump = () => {
+        setIsJumping(true);
+        let startPosY = 0;
+        let direction = 1; // 1 for up, -1 for down
+
+        const jump = () => {
+            setKirbyPosY(startPosY);
+            startPosY += JUMP_SPEED * direction;
+
+            // Change direction at peak of jump
+            if (startPosY >= JUMP_HEIGHT) {
+                direction = -1; // Start descending
+            }
+
+            // End jump when back on the ground
+            if (startPosY <= 0 && direction === -1) {
+                setKirbyPosY(0);
                 setIsJumping(false);
-            }, 500); // 0.5 seconds for jump duration
-        }
+                return;
+            }
+
+            requestAnimationFrame(jump); // Continue animation
+        };
+
+        jump();
     };
 
-    // Touch controls for mobile
-    const handleTouchStart = (e: TouchEvent) => {
-        const touchX = e.touches[0].clientX;
-        const screenWidth = window.innerWidth;
-
-        // Determine movement based on touch position on screen
-        if (touchX > screenWidth / 2) {
-            moveRight();
-        } else {
-            moveLeft();
-        }
-    };
-
-    // Add event listeners for keyboard and touch controls when component mounts
+    // Add event listeners for keyboard when component mounts
     useEffect(() => {
         window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('touchstart', handleTouchStart);
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
-            window.removeEventListener('touchstart', handleTouchStart);
         };
-    }, [isJumping]);
+    }, []);
 
     return (
-        <div style={{ ...styles.container, backgroundPositionX: `${backgroundPos}px` }}>
+        <div style={styles.container}>
             <div
                 id="kirby"
                 style={{
                     ...styles.kirby,
                     left: kirbyPosX,
-                    transform: `translateY(${isJumping ? '-100px' : '0'}) scaleX(${facingRight ? 1 : -1})`,
+                    bottom: 35 + kirbyPosY,
+                    transform: `scaleX(${facingRight ? 1 : -1})`,
                 }}
             ></div>
         </div>
@@ -98,13 +92,11 @@ const styles = {
     } as React.CSSProperties,
     kirby: {
         position: 'absolute',
-        bottom: '35px', // Lowered Kirby by 15px
         width: '50px',
         height: '50px',
         backgroundImage: "url('/kirby.gif')",
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'contain',
-        transition: 'none', // Remove animation on transform
     } as React.CSSProperties,
 };
 
