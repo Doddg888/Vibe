@@ -5,21 +5,9 @@ import { useState, useEffect } from 'react';
 const KirbyPage = () => {
     const [kirbyPosX, setKirbyPosX] = useState(50); // Kirby's horizontal position
     const [kirbyPosY, setKirbyPosY] = useState(0); // Kirby's vertical position
-    const [isJumping, setIsJumping] = useState(false);
     const [facingRight, setFacingRight] = useState(true);
-    const [velocityY, setVelocityY] = useState(0); // Vertical velocity for gravity effect
 
     const MOVE_STEP = 10;
-    const JUMP_HEIGHT = 15;
-    const GRAVITY = 1;
-    const PLATFORM_HEIGHT = 10;
-
-    // Define platforms as an array of objects with x, y, width, and height
-    const platforms = [
-        { x: 100, y: 200, width: 100, height: PLATFORM_HEIGHT },
-        { x: 300, y: 300, width: 150, height: PLATFORM_HEIGHT },
-        { x: 500, y: 150, width: 100, height: PLATFORM_HEIGHT },
-    ];
 
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
@@ -30,46 +18,9 @@ const KirbyPage = () => {
             setKirbyPosX((prevPosX) => Math.max(prevPosX - MOVE_STEP, 0));
             setFacingRight(false);
         }
-        if ((e.key === ' ' || e.key.toLowerCase() === 'z') && !isJumping) { // Space or Z for jump
-            startJump();
-        }
     };
 
-    const startJump = () => {
-        if (!isJumping) {
-            setIsJumping(true);
-            setVelocityY(-JUMP_HEIGHT); // Initial upward velocity for jump
-        }
-    };
-
-    const applyGravity = () => {
-        setKirbyPosY((prevPosY) => {
-            const newY = prevPosY + velocityY;
-            return Math.max(newY, 0); // Ensure Kirby doesn't fall below ground level
-        });
-        setVelocityY((prevVelocity) => prevVelocity + GRAVITY); // Gravity effect
-
-        // Check for collision with platforms
-        platforms.forEach((platform) => {
-            if (
-                kirbyPosX + 50 > platform.x && // Kirby’s right side > platform’s left side
-                kirbyPosX < platform.x + platform.width && // Kirby’s left side < platform’s right side
-                kirbyPosY <= platform.y && // Kirby is above the platform
-                kirbyPosY + velocityY >= platform.y - PLATFORM_HEIGHT // Kirby is landing on platform
-            ) {
-                setVelocityY(0); // Stop falling
-                setKirbyPosY(platform.y - PLATFORM_HEIGHT); // Set Kirby on top of the platform
-                setIsJumping(false); // Allow jumping again
-            }
-        });
-
-        // Stop falling if Kirby reaches the ground level
-        if (kirbyPosY === 0) {
-            setIsJumping(false);
-        }
-    };
-
-    // Add event listeners for keyboard when component mounts
+    // Add event listener for keyboard when component mounts
     useEffect(() => {
         window.addEventListener('keydown', handleKeyDown);
         return () => {
@@ -77,19 +28,25 @@ const KirbyPage = () => {
         };
     }, []);
 
-    // Apply gravity effect on every frame
-    useEffect(() => {
-        const gravityInterval = setInterval(() => {
-            if (!isJumping || velocityY > 0) {
-                applyGravity();
-            }
-        }, 30);
-
-        return () => clearInterval(gravityInterval);
-    }, [isJumping, velocityY, kirbyPosX, kirbyPosY]);
-
     return (
         <div style={styles.container}>
+            {/* Logo at top-left */}
+            <img src="/logo-vibe.png" alt="Vibe Logo" style={styles.logo} />
+
+            {/* Social icons at top-right with links */}
+            <div style={styles.socialIcons}>
+                <a href="https://x.com/Vibe_On_Solana" target="_blank" rel="noopener noreferrer">
+                    <img src="/twitter-logo.png" alt="Twitter" style={styles.icon} />
+                </a>
+                <a href="https://dexscreener.com/solana/4b6akdqcqpqaylbkmdex4k9nrszj86qdax8vapzp5ra6" target="_blank" rel="noopener noreferrer">
+                    <img src="/dex-logo.png" alt="DEXScreener" style={styles.icon} />
+                </a>
+                <a href="https://t.me/+1HkDem0pFos4YjU0" target="_blank" rel="noopener noreferrer">
+                    <img src="/telegram_logo.png" alt="Telegram" style={styles.icon} />
+                </a>
+            </div>
+
+            {/* Kirby character */}
             <div
                 id="kirby"
                 style={{
@@ -99,18 +56,6 @@ const KirbyPage = () => {
                     transform: `scaleX(${facingRight ? 1 : -1})`,
                 }}
             ></div>
-            {platforms.map((platform, index) => (
-                <div
-                    key={index}
-                    style={{
-                        ...styles.platform,
-                        left: platform.x,
-                        bottom: platform.y,
-                        width: platform.width,
-                        height: platform.height,
-                    }}
-                ></div>
-            ))}
         </div>
     );
 };
@@ -129,6 +74,24 @@ const styles = {
         alignItems: 'flex-end',
         position: 'relative',
     } as React.CSSProperties,
+    logo: {
+        position: 'absolute',
+        top: '10px',
+        left: '10px',
+        width: '100px', // Adjust size as needed
+    } as React.CSSProperties,
+    socialIcons: {
+        position: 'absolute',
+        top: '10px',
+        right: '10px',
+        display: 'flex',
+        gap: '10px', // Space between icons
+    } as React.CSSProperties,
+    icon: {
+        width: '30px', // Adjust size as needed
+        height: '30px',
+        cursor: 'pointer',
+    } as React.CSSProperties,
     kirby: {
         position: 'absolute',
         width: '50px',
@@ -136,10 +99,6 @@ const styles = {
         backgroundImage: "url('/kirby.gif')",
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'contain',
-    } as React.CSSProperties,
-    platform: {
-        position: 'absolute',
-        backgroundColor: '#654321', // Brown color for the platform
     } as React.CSSProperties,
 };
 
