@@ -4,25 +4,25 @@ import { useState, useEffect } from 'react';
 
 const KirbyPage = () => {
     const [kirbyPosX, setKirbyPosX] = useState(50); // Kirby's horizontal position
-    const [kirbyPosY, setKirbyPosY] = useState(0); // Kirby's vertical position for jumping
+    const [kirbyPosY, setKirbyPosY] = useState(0); // Kirby's vertical position
     const [isJumping, setIsJumping] = useState(false);
-    const [facingRight, setFacingRight] = useState(true);
+    const [facingRight, setFacingRight] = useState(false); // Default facing direction is left
     const [velocityY, setVelocityY] = useState(0); // Vertical velocity for gravity effect
 
-    const MOVE_STEP = 5;
+    const MOVE_STEP = 10;
     const JUMP_STRENGTH = 15;
-    const GRAVITY = 0.7;
+    const GRAVITY = 0.5;
 
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
-            setKirbyPosX((prevPosX) => Math.min(prevPosX + MOVE_STEP, window.innerWidth - 75)); // Adjust for new Kirby size
-            setFacingRight(false); // Change to face right
+            setKirbyPosX((prevPosX) => Math.min(prevPosX + MOVE_STEP, window.innerWidth - 50));
+            setFacingRight(true); // Set to face right
         }
         if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'q') {
             setKirbyPosX((prevPosX) => Math.max(prevPosX - MOVE_STEP, 0));
-            setFacingRight(true); // Change to face left
+            setFacingRight(false); // Set to face left
         }
-        if ((e.key === ' ' || e.key.toLowerCase() === 'z' || e.key === 'ArrowUp') && !isJumping) {
+        if ((e.key === ' ' || e.key.toLowerCase() === 'z') && !isJumping) { // Space or Z for jump
             startJump();
         }
     };
@@ -35,11 +35,11 @@ const KirbyPage = () => {
     };
 
     const applyGravity = () => {
-        setKirbyPosY((prevPosY) => Math.max(prevPosY + velocityY, 0)); // Ensure Kirby doesn’t fall below ground level
+        setKirbyPosY((prevPosY) => Math.max(prevPosY + velocityY, 0)); // Ensure Kirby doesn't fall below ground level
         setVelocityY((prevVelocity) => prevVelocity + GRAVITY); // Gravity effect
 
         // Stop falling if Kirby reaches the ground level
-        if (kirbyPosY <= 0 && velocityY >= 0) {
+        if (kirbyPosY === 0 && velocityY >= 0) {
             setIsJumping(false);
             setVelocityY(0); // Reset velocity when hitting the ground
         }
@@ -55,17 +55,13 @@ const KirbyPage = () => {
 
     // Apply gravity effect with requestAnimationFrame for smoother animation
     useEffect(() => {
-        let animationFrameId: number;
-
         const animationFrame = () => {
             if (isJumping || velocityY !== 0) {
                 applyGravity();
             }
-            animationFrameId = requestAnimationFrame(animationFrame);
+            requestAnimationFrame(animationFrame);
         };
-        animationFrameId = requestAnimationFrame(animationFrame);
-
-        return () => cancelAnimationFrame(animationFrameId);
+        requestAnimationFrame(animationFrame);
     }, [isJumping, velocityY, kirbyPosY]);
 
     return (
@@ -73,17 +69,11 @@ const KirbyPage = () => {
             {/* Logo at top-left */}
             <img src="/logo-vibe.png" alt="Vibe Logo" style={styles.logo} />
 
-            {/* Social icons at top-right with links */}
+            {/* Social icons at top-right */}
             <div style={styles.socialIcons}>
-                <a href="https://x.com/Vibe_On_Solana" target="_blank" rel="noopener noreferrer">
-                    <img src="/twitter-logo.png" alt="Twitter" style={styles.icon} />
-                </a>
-                <a href="https://dexscreener.com/solana/4b6akdqcqpqaylbkmdex4k9nrszj86qdax8vapzp5ra6" target="_blank" rel="noopener noreferrer">
-                    <img src="/dex-logo.png" alt="DEXScreener" style={styles.icon} />
-                </a>
-                <a href="https://t.me/+1HkDem0pFos4YjU0" target="_blank" rel="noopener noreferrer">
-                    <img src="/telegram-logo.png" alt="Telegram" style={styles.icon} />
-                </a>
+                <img src="/twitter-logo.png" alt="Twitter" style={styles.icon} />
+                <img src="/dex-logo.png" alt="DEXScreener" style={styles.icon} />
+                <img src="/telegram_logo.png" alt="Telegram" style={styles.icon} />
             </div>
 
             {/* Kirby character */}
@@ -93,7 +83,7 @@ const KirbyPage = () => {
                     ...styles.kirby,
                     left: kirbyPosX,
                     bottom: kirbyPosY + 35,
-                    transform: `scaleX(${facingRight ? -1 : 1})`, // Invert facing direction
+                    transform: `scaleX(${facingRight ? 1 : -1})`, // Flip based on facing direction
                 }}
             ></div>
         </div>
@@ -118,24 +108,24 @@ const styles = {
         position: 'absolute',
         top: '10px',
         left: '10px',
-        width: '150px', // Increased size for the logo
+        width: '100px', // Adjust size as needed
     } as React.CSSProperties,
     socialIcons: {
         position: 'absolute',
         top: '10px',
         right: '10px',
         display: 'flex',
-        gap: '15px', // Increased spacing between icons
+        gap: '10px', // Space between icons
     } as React.CSSProperties,
     icon: {
-        width: '40px', // Increased size for social icons
-        height: '40px',
+        width: '30px', // Adjust size as needed
+        height: '30px',
         cursor: 'pointer',
     } as React.CSSProperties,
     kirby: {
         position: 'absolute',
-        width: '75px', // Increased size for Kirby
-        height: '75px',
+        width: '50px',
+        height: '50px',
         backgroundImage: "url('/kirby.gif')",
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'contain',
