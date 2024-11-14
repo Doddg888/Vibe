@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 
 const KirbyPage = () => {
     const [kirbyPosX, setKirbyPosX] = useState(50); // Kirby's horizontal position
-    const [kirbyPosY, setKirbyPosY] = useState(0); // Kirby's vertical position
     const [facingRight, setFacingRight] = useState(true);
+    const [isMuted, setIsMuted] = useState(true); // Control mute/unmute for YouTube video
 
     const MOVE_STEP = 10;
 
@@ -46,13 +46,27 @@ const KirbyPage = () => {
                 </a>
             </div>
 
+            {/* YouTube Embed */}
+            <div style={styles.youtubeContainer}>
+                <iframe
+                    src={`https://www.youtube.com/embed/lh0rbqDJ6pQ?autoplay=1&loop=1&mute=${isMuted ? 1 : 0}`}
+                    title="Background Music"
+                    width="0"
+                    height="0"
+                    allow="autoplay"
+                    style={{ border: 'none' }}
+                ></iframe>
+                <button onClick={() => setIsMuted(!isMuted)} style={styles.unmuteButton}>
+                    {isMuted ? "Unmute Sound" : "Mute Sound"}
+                </button>
+            </div>
+
             {/* Kirby character */}
             <div
                 id="kirby"
                 style={{
                     ...styles.kirby,
                     left: kirbyPosX,
-                    bottom: kirbyPosY + 35,
                     transform: `scaleX(${facingRight ? 1 : -1})`,
                 }}
             ></div>
@@ -90,6 +104,20 @@ const styles = {
     icon: {
         width: '30px', // Adjust size as needed
         height: '30px',
+        cursor: 'pointer',
+    } as React.CSSProperties,
+    youtubeContainer: {
+        position: 'absolute',
+        bottom: '10px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+    } as React.CSSProperties,
+    unmuteButton: {
+        padding: '8px 12px',
+        fontSize: '12px',
         cursor: 'pointer',
     } as React.CSSProperties,
     kirby: {
