@@ -23,7 +23,7 @@ const KirbyPage = () => {
             setKirbyPosX((prevPosX) => Math.max(prevPosX - MOVE_STEP, 0));
             setFacingRight(false);
         }
-        if ((e.key === ' ' || e.key.toLowerCase() === 'z') && !isJumping) {
+        if ((e.key === ' ' || e.key.toLowerCase() === 'z' || e.key === 'ArrowUp') && !isJumping) {
             startJump();
         }
     };
@@ -67,6 +67,9 @@ const KirbyPage = () => {
 
     return (
         <div style={styles.container}>
+            {/* Retro-style welcome text */}
+            <div style={styles.welcomeText}>Welcome to $Vibe</div>
+
             {/* Logo at top-left */}
             <img src="/logo-vibe.png" alt="Vibe Logo" style={styles.logo} />
 
@@ -125,6 +128,17 @@ const styles = {
         justifyContent: 'center',
         alignItems: 'flex-end',
         position: 'relative',
+    } as React.CSSProperties,
+    welcomeText: {
+        position: 'absolute',
+        top: '50px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        fontSize: '48px',
+        fontFamily: '"Press Start 2P", cursive', // Retro game font (load Google Font if needed)
+        color: 'rgba(255, 255, 255, 0.7)', // White with 70% opacity
+        textShadow: '2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000', // Retro shadow effect
+        pointerEvents: 'none',
     } as React.CSSProperties,
     logo: {
         position: 'absolute',
