@@ -3,27 +3,25 @@
 import { useState, useEffect } from 'react';
 
 const KirbyPage = () => {
-    const [posX, setPosX] = useState(0);
+    const [backgroundPos, setBackgroundPos] = useState(0);
     const [isJumping, setIsJumping] = useState(false);
     const [facingRight, setFacingRight] = useState(true); // Tracks Kirby's direction
 
     // Event handler for keyboard and touch controls
-    const handleKeyDown = (e: KeyboardEvent | TouchEvent) => {
-        if (e instanceof KeyboardEvent) {
-            if (e.key === 'ArrowRight') {
-                setPosX((prevX) => prevX + 10);
-                setFacingRight(true);
-            }
-            if (e.key === 'ArrowLeft') {
-                setPosX((prevX) => prevX - 10);
-                setFacingRight(false);
-            }
-            if (e.key === ' ' && !isJumping) { // Space bar for jump
-                setIsJumping(true);
-                setTimeout(() => {
-                    setIsJumping(false);
-                }, 500); // 0.5 seconds for jump duration
-            }
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'ArrowRight') {
+            setBackgroundPos((prevPos) => prevPos - 10);
+            setFacingRight(true);
+        }
+        if (e.key === 'ArrowLeft') {
+            setBackgroundPos((prevPos) => prevPos + 10);
+            setFacingRight(false);
+        }
+        if (e.key === ' ' && !isJumping) { // Space bar for jump
+            setIsJumping(true);
+            setTimeout(() => {
+                setIsJumping(false);
+            }, 500); // 0.5 seconds for jump duration
         }
     };
 
@@ -34,10 +32,10 @@ const KirbyPage = () => {
 
         // Determine movement based on touch position on screen
         if (touchX > screenWidth / 2) {
-            setPosX((prevX) => prevX + 10);
+            setBackgroundPos((prevPos) => prevPos - 10);
             setFacingRight(true);
         } else {
-            setPosX((prevX) => prevX - 10);
+            setBackgroundPos((prevPos) => prevPos + 10);
             setFacingRight(false);
         }
     };
@@ -53,12 +51,12 @@ const KirbyPage = () => {
     }, [isJumping]);
 
     return (
-        <div style={{ ...styles.container, backgroundPositionX: `-${posX}px` }}>
+        <div style={{ ...styles.container, backgroundPositionX: `${backgroundPos}px` }}>
             <div
                 id="kirby"
                 style={{
                     ...styles.kirby,
-                    transform: `translateX(${posX}px) translateY(${isJumping ? '-100px' : '0'}) scaleX(${facingRight ? 1 : -1})`,
+                    transform: `translateY(${isJumping ? '-100px' : '0'}) scaleX(${facingRight ? 1 : -1})`,
                 }}
             ></div>
         </div>
@@ -78,7 +76,7 @@ const styles = {
         alignItems: 'flex-end',
     } as React.CSSProperties,
     kirby: {
-        position: 'absolute',
+        position: 'relative', // Set relative to container instead of absolute
         bottom: '35px', // Lowered Kirby by 15px
         width: '50px',
         height: '50px',
