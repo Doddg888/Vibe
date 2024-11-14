@@ -7,12 +7,11 @@ const KirbyPage = () => {
     const [kirbyPosY, setKirbyPosY] = useState(0); // Kirby's vertical position for jumping
     const [isJumping, setIsJumping] = useState(false);
     const [facingRight, setFacingRight] = useState(true);
-    const [isMuted, setIsMuted] = useState(true); // Control mute/unmute for YouTube video
     const [velocityY, setVelocityY] = useState(0); // Vertical velocity for gravity effect
 
-    const MOVE_STEP = 10;
-    const JUMP_STRENGTH = 20;
-    const GRAVITY = 1;
+    const MOVE_STEP = 5;
+    const JUMP_STRENGTH = 15;
+    const GRAVITY = 0.7;
 
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
@@ -54,15 +53,17 @@ const KirbyPage = () => {
         };
     }, []);
 
-    // Apply gravity effect on every frame
+    // Apply gravity effect with requestAnimationFrame for smoother animation
     useEffect(() => {
-        const gravityInterval = setInterval(() => {
+        const animationFrame = () => {
             if (isJumping || velocityY !== 0) {
                 applyGravity();
             }
-        }, 30);
+            requestAnimationFrame(animationFrame);
+        };
+        requestAnimationFrame(animationFrame);
 
-        return () => clearInterval(gravityInterval);
+        return () => cancelAnimationFrame(animationFrame);
     }, [isJumping, velocityY, kirbyPosY]);
 
     return (
