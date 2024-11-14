@@ -16,11 +16,11 @@ const KirbyPage = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
             setKirbyPosX((prevPosX) => Math.min(prevPosX + MOVE_STEP, window.innerWidth - 75)); // Adjust for new Kirby size
-            setFacingRight(true);
+            setFacingRight(false); // Change to face right
         }
         if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'q') {
             setKirbyPosX((prevPosX) => Math.max(prevPosX - MOVE_STEP, 0));
-            setFacingRight(false);
+            setFacingRight(true); // Change to face left
         }
         if ((e.key === ' ' || e.key.toLowerCase() === 'z' || e.key === 'ArrowUp') && !isJumping) {
             startJump();
@@ -93,7 +93,7 @@ const KirbyPage = () => {
                     ...styles.kirby,
                     left: kirbyPosX,
                     bottom: kirbyPosY + 35,
-                    transform: `scaleX(${facingRight ? 1 : -1})`,
+                    transform: `scaleX(${facingRight ? -1 : 1})`, // Invert facing direction
                 }}
             ></div>
         </div>
